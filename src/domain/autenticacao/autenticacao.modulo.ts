@@ -7,9 +7,17 @@ import { UsuarioAppPublio } from './modelos/usuario-app-publico.modelo';
 import { Repository } from 'typeorm';
 import { AutenticacaoAppPublicoRepositorioImpl } from './repositorios/autenticacao-app-publico.repositorio';
 import { EmailService } from 'services/email-code-change-password.service';
+import { AutenticacaoUpdateUserAppPublicoRepositorioImpl } from './repositorios/autenticacao-update-user-app-publico.repositorio';
+import { UpdateUsuarioAppPublio } from './modelos/update-usuario-app-publico.modelo';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Usuario, UsuarioAppPublio])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Usuario,
+      UsuarioAppPublio,
+      UpdateUsuarioAppPublio,
+    ]),
+  ],
   controllers: [AutenticacaoControlador],
   providers: [
     {
@@ -26,11 +34,20 @@ import { EmailService } from 'services/email-code-change-password.service';
       },
       inject: [getRepositoryToken(UsuarioAppPublio)],
     },
-    EmailService, // <-- registra o EmailService aqui
+
+    {
+      provide: 'AutenticacaoUpdateUserAppPublicoRepositorio',
+      useFactory: (repository: Repository<UpdateUsuarioAppPublio>) => {
+        return new AutenticacaoUpdateUserAppPublicoRepositorioImpl(repository);
+      },
+      inject: [getRepositoryToken(UpdateUsuarioAppPublio)],
+    },
+    EmailService,
   ],
   exports: [
     'AutenticacaoRepositorio',
     'AutenticacaoAppPublicoRepositorio',
+    'AutenticacaoUpdateUserAppPublicoRepositorio',
     EmailService,
   ],
 })

@@ -1,11 +1,14 @@
 import {
   Controller,
   Post,
+  UsePipes,
+  Put,
   Body,
   HttpException,
   HttpStatus,
   Inject,
   HttpCode,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AutenticacaoRepositorio } from '../interfaces/autenticacao-repositorio.interface';
 import { LoginRespostaDto } from '../dtos/login-resposta.dto';
@@ -15,10 +18,9 @@ import { LoginAppPublicoRespostaDto } from 'domain/autenticacao/dtos/login-app-p
 import { AutenticacaoAppPublicoRepositorioImpl } from 'domain/autenticacao/repositorios/autenticacao-app-publico.repositorio';
 import { SendEmailChangePasswordAppPublicoDto } from 'domain/autenticacao/dtos/send-email-changePassword-app-publico.dto';
 import { EmailService } from 'services/email-code-change-password.service';
-// import nodemailer from 'nodemailer';
-// import * as nodemailer from 'nodemailer'; // Importação CommonJS para compatibilidade
-// import { UsuariosCrudRepositorio } from 'autenticacao/interfaces/usuarios-addupdate-repositorio.interface';
-//import { UsuarioCrudDto } from 'autenticacao/dtos/crud-usuarios.dto';
+import { UsuarioCrudAppPublicoDto } from '../dtos/crud-usuarios-app-publico.dto';
+import { AutenticacaoUpdateUserAppPublicoRepositorioImpl } from '../repositorios/autenticacao-update-user-app-publico.repositorio';
+import { hashPassword } from 'utils';
 
 @Controller('autenticacao')
 export class AutenticacaoControlador {
@@ -27,6 +29,8 @@ export class AutenticacaoControlador {
     private readonly repositorio: AutenticacaoRepositorio,
     @Inject('AutenticacaoAppPublicoRepositorio')
     private readonly repositorioLoginAppPublico: AutenticacaoAppPublicoRepositorioImpl,
+    @Inject('AutenticacaoUpdateUserAppPublicoRepositorio')
+    private readonly repositorioUpdateUserAppPublico: AutenticacaoUpdateUserAppPublicoRepositorioImpl,
     private readonly emailService: EmailService
   ) {}
 
@@ -114,48 +118,25 @@ export class AutenticacaoControlador {
     }
   }
 
-  // @Put('/addupdate')
-  // @HttpCode(HttpStatus.OK)
-  // @UsePipes(new ValidationPipe({ transform: true }))
-  // async atualizarConsignados(
-  //   @Body() atualizaProdutoDto: UsuarioCrudDto
-  // ): Promise<UsuarioCrudDto> {
-  //   try {
-  //     const { usuario } = atualizaProdutoDto;
+  @Put('/update-user-app-publico')
+  @HttpCode(HttpStatus.OK)
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async updateUserAppPublico(
+    @Body() atualizaProdutoDto: UsuarioCrudAppPublicoDto
+  ): Promise<LoginAppPublicoRespostaDto> {
+    try {
+      atualizaProdutoDto.usersweb_senha = await hashPassword(
+        atualizaProdutoDto.usersweb_senha
+      );
 
-  //     // Validar se o array de consignados não está vazio
-  //     if (!usuario) {
-  //       throw new HttpException(
-  //         'Nenhum produto fornecido para atualização',
-  //         HttpStatus.BAD_REQUEST
-  //       );
-  //     }
+      await this.repositorioUpdateUserAppPublico.atualizarUser(
+        atualizaProdutoDto
+      );
 
-  //     console.log('produto', usuario);
-
-  //     // Chamar o método do repositório para atualizar os consignados
-  //     const returnUsuarioData =
-  //       await this.repositorioAddUPdateUsuarios.atualizarUsuarios(usuario);
-  //     return returnUsuarioData;
-
-  //     // this.logger.log(`Consignados atualizados com sucesso.`);
-  //   } catch (error: unknown) {
-  //     let errorMessage = 'Erro desconhecido';
-  //     let errorStack: string | undefined;
-
-  //     if (error instanceof Error) {
-  //       errorMessage = error.message;
-  //       errorStack = error.stack;
-  //     }
-
-  //     this.logger.error(
-  //       `Erro ao atualizar produto: ${errorMessage}`,
-  //       errorStack
-  //     );
-  //     throw new HttpException(
-  //       'Erro ao atualizar produto',
-  //       HttpStatus.INTERNAL_SERVER_ERROR
-  //     );
-  //   }
-  // }
+      return { success: true, message: 'Cadastro atualizado com sucesso.' };
+    } catch (error: unknown) {
+      console.error('Erro ao tentar atualizar cadastro: ', error);
+      return { success: false, message: 'Erro ao tentar atualizar cadastro' };
+    }
+  }
 }
