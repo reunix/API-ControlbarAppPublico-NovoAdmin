@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AutenticacaoModulo } from './autenticacao/autenticacao.modulo';
-import { ClientesModulo } from './clientes/clientes.modulo';
-import { EventosModulo } from './eventos/eventos.modulo';
-import { ConsignadoModulo } from './consignados/consignados.modulo';
-import { EventoDespesasModulo } from './eventodespesas/eventodespesas.modulo';
-import { ProdutosModulo } from './produtos/produtos.modulo';
-import { ProdutosEntradasModulo } from './produtosentradas/produtosentradas.modulo';
-import { DistribuicaoModulo } from './distribuicao/distribuicao.modulo';
-import { FornecedorModulo } from './fornecedores/fornecedores.modulo';
-import { ProdutosComposicao } from './produtoscomposicao/produtoscomposicao.modulo';
+import { AutenticacaoModulo } from './domain/autenticacao/autenticacao.modulo';
+import { ClientesModulo } from './domain/clientes/clientes.modulo';
+import { EventosModulo } from './domain/eventos/eventos.modulo';
+import { ConsignadoModulo } from './domain/consignados/consignados.modulo';
+import { EventoDespesasModulo } from './domain/eventodespesas/eventodespesas.modulo';
+import { ProdutosModulo } from './domain/produtos/produtos.modulo';
+import { ProdutosEntradasModulo } from './domain/produtosentradas/produtosentradas.modulo';
+import { DistribuicaoModulo } from './domain/distribuicao/distribuicao.modulo';
+import { FornecedorModulo } from './domain/fornecedores/fornecedores.modulo';
 import { ConfiguracaoAmbiente } from './configuracao.interface';
+import { ProdutosComposicao } from './domain/produtoscomposicao/produtoscomposicao.modulo';
 
 @Module({
   imports: [
