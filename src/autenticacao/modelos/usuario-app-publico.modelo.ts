@@ -21,6 +21,14 @@ export class UsuarioAppPublio {
   })
   senha: string | null;
 
+  @Column({
+    name: 'usersweb_email',
+    type: 'varchar',
+    length: 80,
+    nullable: true,
+  })
+  email: string | null;
+
   @Column({ name: 'usersweb_cpf', type: 'varchar', length: 20, nullable: true })
   cpf: string | null;
 }

@@ -15,6 +15,20 @@ export class AutenticacaoAppPublicoRepositorioImpl
     @InjectRepository(UsuarioAppPublio)
     private readonly repositorioUserAppPublico: Repository<UsuarioAppPublio>
   ) {}
+  async buscarUsuarioAppPublicoEmail(
+    email: string
+  ): Promise<UsuarioAppPublio | null> {
+    try {
+      const usuario = await this.repositorioUserAppPublico.findOne({
+        where: { email },
+      });
+
+      return usuario || null;
+    } catch (error) {
+      console.error('Erro ao buscar usuário: ', error);
+      throw error;
+    }
+  }
 
   async buscarUsuarioAppPublico(
     cpf: string,
