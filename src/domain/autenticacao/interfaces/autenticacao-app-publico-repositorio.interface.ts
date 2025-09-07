@@ -1,5 +1,5 @@
 import { LoginAppPublicoRespostaDto } from 'domain/autenticacao/dtos/login-app-publico-resposta.dto';
-import { UsuarioAppPublio } from 'domain/autenticacao/modelos/usuario-app-publico.modelo';
+import { UsuarioCrudAppPublicoDto } from '../dtos/crud-usuarios-app-publico.dto';
 
 export interface AutenticacaoAppPublicoRepositorio {
   buscarUsuarioAppPublico(
@@ -7,5 +7,7 @@ export interface AutenticacaoAppPublicoRepositorio {
     senha: string
   ): Promise<LoginAppPublicoRespostaDto | null>;
 
-  buscarUsuarioAppPublicoEmail(email: string): Promise<UsuarioAppPublio | null>;
+  buscarUsuarioAppPublicoEmail(
+    email: string
+  ): Promise<UsuarioCrudAppPublicoDto | null>;
 }

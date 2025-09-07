@@ -1,8 +1,8 @@
-import { Usuario } from '../modelos/usuario.modelo';
+import { UsuarioAdmin } from '../modelos/usuario-admin.modelo';
 
 export interface AutenticacaoRepositorio {
   buscarUsuarioPorLoginESenha(
     email: string,
     senha: string
-  ): Promise<Usuario | null>;
+  ): Promise<UsuarioAdmin | null>;
 }

@@ -6,15 +6,16 @@ import { UserUpdateAppPublicoRepositorio } from '../interfaces/usuarios-update-a
 import { UsuarioCrudAppPublicoDto } from '../dtos/crud-usuarios-app-publico.dto';
 import { removeUndefined } from 'utils/';
 import { LoginAppPublicoRespostaDto } from '../dtos/login-app-publico-resposta.dto';
-import { UpdateUsuarioAppPublio } from '../modelos/update-usuario-app-publico.modelo';
+// import { UpdateUsuarioAppPublio } from '../modelos/update-usuario-app-publico.modelo';
+import { UsuarioAppPublico } from '../modelos/usuarios-app-publico.modelo';
 
 @Injectable()
 export class AutenticacaoUpdateUserAppPublicoRepositorioImpl
   implements UserUpdateAppPublicoRepositorio
 {
   constructor(
-    @InjectRepository(UpdateUsuarioAppPublio)
-    private readonly repositorioUserAppPublico: Repository<UpdateUsuarioAppPublio>
+    @InjectRepository(UsuarioAppPublico)
+    private readonly repositorioUserAppPublico: Repository<UsuarioAppPublico>
   ) {}
   async atualizarUser(
     usuario: UsuarioCrudAppPublicoDto

@@ -3,24 +3,24 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { LoginAppPublicoRespostaDto } from 'domain/autenticacao/dtos/login-app-publico-resposta.dto';
-
-import { UsuarioAppPublio } from 'domain/autenticacao/modelos/usuario-app-publico.modelo';
-import { AutenticacaoAppPublicoRepositorio } from 'domain/autenticacao/interfaces/autenticacao-app-publico-repositorio.interface';
+import { AutenticacaoAppPublicoRepositorio } from '../interfaces/autenticacao-app-publico-repositorio.interface';
+import { UsuarioAppPublico } from '../modelos/usuarios-app-publico.modelo';
+import { UsuarioCrudAppPublicoDto } from '../dtos/crud-usuarios-app-publico.dto';
 
 @Injectable()
 export class AutenticacaoAppPublicoRepositorioImpl
   implements AutenticacaoAppPublicoRepositorio
 {
   constructor(
-    @InjectRepository(UsuarioAppPublio)
-    private readonly repositorioUserAppPublico: Repository<UsuarioAppPublio>
+    @InjectRepository(UsuarioAppPublico)
+    private readonly repositorioUserAppPublico: Repository<UsuarioAppPublico>
   ) {}
   async buscarUsuarioAppPublicoEmail(
     email: string
-  ): Promise<UsuarioAppPublio | null> {
+  ): Promise<UsuarioCrudAppPublicoDto | null> {
     try {
       const usuario = await this.repositorioUserAppPublico.findOne({
-        where: { email },
+        where: { usersweb_email: email },
       });
 
       return usuario || null;
@@ -36,10 +36,12 @@ export class AutenticacaoAppPublicoRepositorioImpl
   ): Promise<LoginAppPublicoRespostaDto> {
     try {
       const usuario = await this.repositorioUserAppPublico.findOne({
-        where: { cpf },
+        where: { usersweb_cpf: cpf },
       });
 
-      if (!usuario || !usuario.senha) {
+      console.log('usuario', usuario);
+
+      if (!usuario || !usuario.usersweb_senha) {
         return {
           success: false,
           message: 'Usuário não encontrado ou senha não definida',
@@ -48,7 +50,7 @@ export class AutenticacaoAppPublicoRepositorioImpl
 
       const isPasswordValid: boolean = await bcrypt.compare(
         senha,
-        usuario.senha
+        usuario.usersweb_senha
       );
 
       return {

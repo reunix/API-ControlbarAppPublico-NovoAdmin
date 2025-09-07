@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   UsePipes,
   Put,
   Body,
@@ -9,6 +10,7 @@ import {
   Inject,
   HttpCode,
   ValidationPipe,
+  Query,
 } from '@nestjs/common';
 import { AutenticacaoRepositorio } from '../interfaces/autenticacao-repositorio.interface';
 import { LoginRespostaDto } from '../dtos/login-resposta.dto';
@@ -21,6 +23,7 @@ import { EmailService } from 'services/email-code-change-password.service';
 import { UsuarioCrudAppPublicoDto } from '../dtos/crud-usuarios-app-publico.dto';
 import { AutenticacaoUpdateUserAppPublicoRepositorioImpl } from '../repositorios/autenticacao-update-user-app-publico.repositorio';
 import { hashPassword } from 'utils';
+import { RequestLoginAppPublicoPorEmailDto } from '../dtos/request-login-por-email.dto';
 
 @Controller('autenticacao')
 export class AutenticacaoControlador {
@@ -72,15 +75,33 @@ export class AutenticacaoControlador {
     return returnData;
   }
 
-  @Post('app-publico')
+  @Post('login-app-publico')
   @HttpCode(HttpStatus.OK)
   async loginAppPublico(
     @Body() loginDto: LoginAppPublicoDto
   ): Promise<LoginAppPublicoRespostaDto> {
-    return await this.repositorioLoginAppPublico.buscarUsuarioAppPublico(
-      loginDto.cpf,
-      loginDto.senha
-    );
+    const responseUsuario =
+      await this.repositorioLoginAppPublico.buscarUsuarioAppPublico(
+        loginDto.cpf,
+        loginDto.senha
+      );
+
+    console.log('responseUsuario', responseUsuario);
+
+    return responseUsuario;
+  }
+
+  @Get('get-user-por-email')
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async buscarUsuarioPorEmail(
+    @Query() buscaUsuarioPoremailDto: RequestLoginAppPublicoPorEmailDto
+  ): Promise<UsuarioCrudAppPublicoDto | null> {
+    const usuario =
+      await this.repositorioLoginAppPublico.buscarUsuarioAppPublicoEmail(
+        buscaUsuarioPoremailDto.email
+      );
+    console.log('usuario...', usuario);
+    return usuario;
   }
 
   @Post('send-email-change-password-app-publico')
@@ -102,7 +123,7 @@ export class AutenticacaoControlador {
       }
 
       const result = await this.emailService.sendPasswordResetEmail(
-        usuario.nome || 'Usuário',
+        usuario.usersweb_nome || 'Usuário',
         sendEmailDto.email,
         sendEmailDto.codigo
       );

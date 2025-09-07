@@ -2,45 +2,45 @@ import { Module } from '@nestjs/common';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { AutenticacaoControlador } from './controladores/autenticacao.controlador';
 import { AutenticacaoRepositorioImpl } from './repositorios/autenticacao.repositorio';
-import { Usuario } from './modelos/usuario.modelo';
-import { UsuarioAppPublio } from './modelos/usuario-app-publico.modelo';
+import { UsuarioAdmin } from './modelos/usuario-admin.modelo';
 import { Repository } from 'typeorm';
 import { AutenticacaoAppPublicoRepositorioImpl } from './repositorios/autenticacao-app-publico.repositorio';
 import { EmailService } from 'services/email-code-change-password.service';
 import { AutenticacaoUpdateUserAppPublicoRepositorioImpl } from './repositorios/autenticacao-update-user-app-publico.repositorio';
-import { UpdateUsuarioAppPublio } from './modelos/update-usuario-app-publico.modelo';
+// import { UpdateUsuarioAppPublio } from './modelos/update-usuario-app-publico.modelo';
+import { UsuarioAppPublico } from './modelos/usuarios-app-publico.modelo';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      Usuario,
-      UsuarioAppPublio,
-      UpdateUsuarioAppPublio,
+      UsuarioAdmin,
+      // UpdateUsuarioAppPublio,
+      UsuarioAppPublico,
     ]),
   ],
   controllers: [AutenticacaoControlador],
   providers: [
     {
       provide: 'AutenticacaoRepositorio',
-      useFactory: (repository: Repository<Usuario>) => {
+      useFactory: (repository: Repository<UsuarioAdmin>) => {
         return new AutenticacaoRepositorioImpl(repository);
       },
-      inject: [getRepositoryToken(Usuario)],
+      inject: [getRepositoryToken(UsuarioAdmin)],
     },
     {
       provide: 'AutenticacaoAppPublicoRepositorio',
-      useFactory: (repository: Repository<UsuarioAppPublio>) => {
+      useFactory: (repository: Repository<UsuarioAppPublico>) => {
         return new AutenticacaoAppPublicoRepositorioImpl(repository);
       },
-      inject: [getRepositoryToken(UsuarioAppPublio)],
+      inject: [getRepositoryToken(UsuarioAppPublico)],
     },
 
     {
       provide: 'AutenticacaoUpdateUserAppPublicoRepositorio',
-      useFactory: (repository: Repository<UpdateUsuarioAppPublio>) => {
+      useFactory: (repository: Repository<UsuarioAppPublico>) => {
         return new AutenticacaoUpdateUserAppPublicoRepositorioImpl(repository);
       },
-      inject: [getRepositoryToken(UpdateUsuarioAppPublio)],
+      inject: [getRepositoryToken(UsuarioAppPublico)],
     },
     EmailService,
   ],
