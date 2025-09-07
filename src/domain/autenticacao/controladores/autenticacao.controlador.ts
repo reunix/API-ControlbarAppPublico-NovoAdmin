@@ -79,14 +79,12 @@ export class AutenticacaoControlador {
   @HttpCode(HttpStatus.OK)
   async loginAppPublico(
     @Body() loginDto: LoginAppPublicoDto
-  ): Promise<LoginAppPublicoRespostaDto> {
+  ): Promise<UsuarioCrudAppPublicoDto | null> {
     const responseUsuario =
       await this.repositorioLoginAppPublico.buscarUsuarioAppPublico(
         loginDto.cpf,
         loginDto.senha
       );
-
-    console.log('responseUsuario', responseUsuario);
 
     return responseUsuario;
   }

@@ -2,7 +2,6 @@ import * as bcrypt from 'bcrypt';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { LoginAppPublicoRespostaDto } from 'domain/autenticacao/dtos/login-app-publico-resposta.dto';
 import { AutenticacaoAppPublicoRepositorio } from '../interfaces/autenticacao-app-publico-repositorio.interface';
 import { UsuarioAppPublico } from '../modelos/usuarios-app-publico.modelo';
 import { UsuarioCrudAppPublicoDto } from '../dtos/crud-usuarios-app-publico.dto';
@@ -33,7 +32,7 @@ export class AutenticacaoAppPublicoRepositorioImpl
   async buscarUsuarioAppPublico(
     cpf: string,
     senha: string
-  ): Promise<LoginAppPublicoRespostaDto> {
+  ): Promise<UsuarioCrudAppPublicoDto | null> {
     try {
       const usuario = await this.repositorioUserAppPublico.findOne({
         where: { usersweb_cpf: cpf },
@@ -42,10 +41,7 @@ export class AutenticacaoAppPublicoRepositorioImpl
       console.log('usuario', usuario);
 
       if (!usuario || !usuario.usersweb_senha) {
-        return {
-          success: false,
-          message: 'Usuário não encontrado ou senha não definida',
-        };
+        return null;
       }
 
       const isPasswordValid: boolean = await bcrypt.compare(
@@ -53,18 +49,14 @@ export class AutenticacaoAppPublicoRepositorioImpl
         usuario.usersweb_senha
       );
 
-      return {
-        success: isPasswordValid,
-        message: isPasswordValid
-          ? 'Logado com sucesso'
-          : 'CPF ou senha incorretos. Tente novamente.',
-      };
+      if (!isPasswordValid) {
+        return null;
+      }
+
+      return usuario;
     } catch (error) {
       console.log('error: ', error);
-      return {
-        success: false,
-        message: `Erro ao buscar usuário: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
-      };
+      return null;
     }
   }
 }
