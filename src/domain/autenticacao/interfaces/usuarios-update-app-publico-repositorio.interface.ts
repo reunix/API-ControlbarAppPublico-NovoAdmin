@@ -5,4 +5,7 @@ export interface UserUpdateAppPublicoRepositorio {
   atualizarUser(
     usuario: UsuarioCrudAppPublicoDto
   ): Promise<LoginAppPublicoRespostaDto>;
+  createUser(
+    usuario: UsuarioCrudAppPublicoDto
+  ): Promise<LoginAppPublicoRespostaDto>;
 }

@@ -3,6 +3,12 @@
 /node_modules
 /build
 
+
+/uploads/*.png
+/uploads/*.jpg
+/uploads/*.jpeg
+/uploads/*.gif
+
 # Logs
 logs
 *.log

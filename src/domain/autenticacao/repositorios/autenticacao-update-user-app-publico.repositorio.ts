@@ -17,6 +17,26 @@ export class AutenticacaoUpdateUserAppPublicoRepositorioImpl
     @InjectRepository(UsuarioAppPublico)
     private readonly repositorioUserAppPublico: Repository<UsuarioAppPublico>
   ) {}
+  async createUser(
+    usuario: UsuarioCrudAppPublicoDto
+  ): Promise<LoginAppPublicoRespostaDto> {
+    try {
+      const data = removeUndefined(usuario);
+
+      await this.repositorioUserAppPublico.save(data);
+
+      return {
+        success: true,
+        message: 'Cadastro atualizado com sucesso',
+      };
+    } catch (error) {
+      console.log('error: ', error);
+      return {
+        success: false,
+        message: `Erro ao tentar atualizar cadastro`,
+      };
+    }
+  }
   async atualizarUser(
     usuario: UsuarioCrudAppPublicoDto
   ): Promise<LoginAppPublicoRespostaDto> {

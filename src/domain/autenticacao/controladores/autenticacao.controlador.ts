@@ -24,6 +24,7 @@ import { UsuarioCrudAppPublicoDto } from '../dtos/crud-usuarios-app-publico.dto'
 import { AutenticacaoUpdateUserAppPublicoRepositorioImpl } from '../repositorios/autenticacao-update-user-app-publico.repositorio';
 import { hashPassword } from 'utils';
 import { RequestLoginAppPublicoPorEmailDto } from '../dtos/request-login-por-email.dto';
+import { SendEmailNewUserAppPublicoDto } from '../dtos/send-email-new-user-app-publico.dto';
 
 @Controller('autenticacao')
 export class AutenticacaoControlador {
@@ -98,7 +99,7 @@ export class AutenticacaoControlador {
       await this.repositorioLoginAppPublico.buscarUsuarioAppPublicoEmail(
         buscaUsuarioPoremailDto.email
       );
-    console.log('usuario...', usuario);
+
     return usuario;
   }
 
@@ -116,12 +117,46 @@ export class AutenticacaoControlador {
       if (!usuario) {
         return {
           success: false,
-          message: `E-mail não encontrado. Verifique se digitou corretamente ou crie uma nova conta.`,
+          message: `E-mail não encontrado. Verifique se digitou corretamente ou tente (Criar nova conta).`,
         };
       }
 
       const result = await this.emailService.sendPasswordResetEmail(
         usuario.usersweb_nome || 'Usuário',
+        sendEmailDto.email,
+        sendEmailDto.codigo
+      );
+
+      if (result.success) {
+        return { success: true, message: 'E-mail enviado com sucesso.' };
+      } else {
+        return { success: false, message: 'Erro ao enviar e-mail.' };
+      }
+    } catch (error: any) {
+      console.error('Erro ao enviar e-mail:', error);
+      return { success: false, message: 'Erro ao enviar e-mail' };
+    }
+  }
+
+  @Post('send-email-new-user-app-publico')
+  @HttpCode(HttpStatus.OK)
+  async sendEmailCodeNewUserAppPublico(
+    @Body() sendEmailDto: SendEmailNewUserAppPublicoDto
+  ): Promise<LoginAppPublicoRespostaDto> {
+    try {
+      const usuario =
+        await this.repositorioLoginAppPublico.buscarUsuarioAppPublicoEmail(
+          sendEmailDto.email
+        );
+
+      if (usuario) {
+        return {
+          success: false,
+          message: `E-mail já encontrado. Verifique se digitou corretamente ou tente (Esqueci minha senha).`,
+        };
+      }
+      const result = await this.emailService.sendNewUserEmail(
+        sendEmailDto.nome,
         sendEmailDto.email,
         sendEmailDto.codigo
       );
@@ -151,6 +186,26 @@ export class AutenticacaoControlador {
       await this.repositorioUpdateUserAppPublico.atualizarUser(
         atualizaProdutoDto
       );
+
+      return { success: true, message: 'Cadastro atualizado com sucesso.' };
+    } catch (error: unknown) {
+      console.error('Erro ao tentar atualizar cadastro: ', error);
+      return { success: false, message: 'Erro ao tentar atualizar cadastro' };
+    }
+  }
+
+  @Post('/create-user-app-publico')
+  @HttpCode(HttpStatus.OK)
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async createUserAppPublico(
+    @Body() atualizaProdutoDto: UsuarioCrudAppPublicoDto
+  ): Promise<LoginAppPublicoRespostaDto> {
+    try {
+      atualizaProdutoDto.usersweb_senha = await hashPassword(
+        atualizaProdutoDto.usersweb_senha
+      );
+
+      await this.repositorioUpdateUserAppPublico.createUser(atualizaProdutoDto);
 
       return { success: true, message: 'Cadastro atualizado com sucesso.' };
     } catch (error: unknown) {

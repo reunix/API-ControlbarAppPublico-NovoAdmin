@@ -110,4 +110,74 @@ export class EmailService {
       html,
     });
   }
+
+  async sendNewUserEmail(userName: string, email: string, codigo: string) {
+    const html = `
+     <!DOCTYPE html>
+      <html lang="pt-BR">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Bem-vindo à Controlbar</title>
+      </head>
+      <body style="font-family: 'Helvetica Neue', Arial, sans-serif; line-height: 1.5; color: #333333; margin: 0; padding: 0; background-color: #f5f5f5;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 20px 0;">
+          <tr>
+            <td align="center">
+              <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); max-width: 600px;">
+                <tr>
+                  <td style="padding: 20px 20px 10px; text-align: center; border-bottom: 1px solid #e0e0e0;">
+                    <img src="https://static.wixstatic.com/media/18e304_316dc72c5c1148a89bfc2c378b59c289~mv2.png/v1/fill/w_180,h_140,al_c,lg_1,q_85,enc_avif,quality_auto/MARCA_P.png" alt="Controlbar" style="max-width: 120px; height: auto; margin-bottom: 10px;">
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 20px;">
+                    <p style="font-size: 16px; color: #333333; margin-bottom: 15px;">
+                      Olá, <strong>${userName}</strong> 👋
+                    </p>
+                    <p style="font-size: 16px; color: #666666; margin-bottom: 20px;">
+                      Seja muito bem-vindo à <strong>Controlbar</strong>! Estamos felizes em ter você conosco. 🎉
+                    </p>
+                    <p style="font-size: 16px; color: #666666; margin-bottom: 20px;">
+                     Agora você já pode aproveitar todos os recursos do nosso aplicativo: antecipar suas compras, utilizar o chat para se comunicar com outros usuários durante o evento — que inclui o Jogo do Match, agenda dos próximos eventos da produtora e da Controlbar — e muito mais.
+                    </p>
+                    <p style="font-size: 16px; color: #666666; margin-bottom: 20px;">
+                     Utilize o código de verificação abaixo para continuar seu cadastro:
+                    </p>
+                    <div style="text-align: center; margin: 20px 0;">
+                      <div style="display: inline-block; background-color: #007AFF; color: #ffffff; font-size: 24px; font-weight: bold; padding: 10px 20px; border-radius: 5px;">
+                        ${codigo}
+                      </div>
+                    </div>
+                    <p style="font-size: 14px; color: #666666; margin-bottom: 20px;">
+                      Se tiver alguma dúvida, nossa equipe de suporte está pronta para ajudar. Basta enviar um e-mail para 
+                      <a href="mailto:suporte@controlbar.app.br" style="color: #007AFF; text-decoration: none;">suporte@controlbar.app.br</a>.
+                    </p>
+                    <p style="font-size: 14px; color: #666666;">
+                      Obrigado por escolher a Controlbar. Vamos juntos nessa jornada! 🚀
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 20px; text-align: center; background-color: #f9f9f9; border-top: 1px solid #e0e0e0; font-size: 12px; color: #999999;">
+                    <p style="margin: 0;">
+                      &copy; ${new Date().getFullYear()} Controlbar. Todos os direitos reservados.<br>
+                      <a href="https://www.sistemacontrolbar.com.br/" style="color: #007AFF; text-decoration: none;">www.sistemacontrolbar.com.br</a>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+
+    return this.sendMail({
+      to: email,
+      subject: 'Novo cadastro - Controlbar',
+      html,
+    });
+  }
 }

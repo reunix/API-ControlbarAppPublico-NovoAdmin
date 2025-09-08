@@ -38,8 +38,6 @@ export class AutenticacaoAppPublicoRepositorioImpl
         where: { usersweb_cpf: cpf },
       });
 
-      console.log('usuario', usuario);
-
       if (!usuario || !usuario.usersweb_senha) {
         return null;
       }
